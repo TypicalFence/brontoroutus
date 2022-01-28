@@ -6,6 +6,7 @@ import { FancyRoute } from "./route.ts";
 import {
     Method,
     MethodMap,
+    ParameterHandler,
     Routable,
     Route,
     RouteRegistrar,
@@ -27,38 +28,38 @@ export class Router implements RouteRegistrar, RouterLike, Routable {
         this.routeMap.set("HEAD", []);
     }
 
-    private addRoute(method: Method, path: string, handler: Handler) {
+    private addRoute(method: Method, path: string, handler: ParameterHandler) {
         this.routeMap.get(method)!.push(
             new FancyRoute({ method, path, handler }),
         );
     }
 
-    get(path: string, handler: Handler): void {
+    get(path: string, handler: ParameterHandler): void {
         this.addRoute("GET", path, handler);
     }
 
-    post(path: string, handler: Handler): void {
+    post(path: string, handler: ParameterHandler): void {
         this.addRoute("POST", path, handler);
     }
 
-    put(path: string, handler: Handler): void {
+    put(path: string, handler: ParameterHandler): void {
         this.addRoute("PUT", path, handler);
     }
 
-    patch(path: string, handler: Handler): void {
+    patch(path: string, handler: ParameterHandler): void {
         this.addRoute("PATCH", path, handler);
     }
 
-    delete(path: string, handler: Handler): void {
+    delete(path: string, handler: ParameterHandler): void {
         this.addRoute("DELETE", path, handler);
     }
 
-    options(path: string, handler: Handler): void {
-        this.addRoute("DELETE", path, handler);
+    options(path: string, handler: ParameterHandler): void {
+        this.addRoute("OPTIONS", path, handler);
     }
 
-    head(path: string, handler: Handler): void {
-        this.addRoute("DELETE", path, handler);
+    head(path: string, handler: ParameterHandler): void {
+        this.addRoute("HEAD", path, handler);
     }
 
     getRoutes(): Route[] {
@@ -93,13 +94,20 @@ export class Router implements RouteRegistrar, RouterLike, Routable {
             const route = await this.route(req.method as Method, url.pathname)
                 .catch(() => {
                     if (noMatchHandler) {
-                        return { handler: noMatchHandler };
+                        return {
+                            handler: noMatchHandler,
+                            pattern: new URLPattern(req.url),
+                        };
                     }
                 });
 
             if (route) {
                 try {
-                    return route.handler(req, conn);
+                    const parameters = route.pattern.exec({
+                        pathname: url.pathname,
+                    });
+                    const record = parameters?.pathname.groups;
+                    return route.handler(req, conn, record || {});
                 } catch (err) {
                     if (errorHandler) {
                         try {

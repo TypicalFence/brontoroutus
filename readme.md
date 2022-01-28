@@ -12,6 +12,10 @@ router.get("/", () => {
     return new Response("🦕");
 });
 
+router.get("/hello/:name", (_req, _conn, params) => {
+    return new Response(`${params.name}`);
+});
+
 serve(router.toHandler({
     errorHandler: (_req, _conn, err) => {
         console.error(err);

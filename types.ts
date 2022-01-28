@@ -14,10 +14,18 @@ export type Method =
 
 export type MethodMap<V> = Map<Method, V>;
 
+export type ParameterHandler =
+    | Handler
+    | ((
+        request: Request,
+        connInfo: ConnInfo,
+        parameter: Record<string, string>,
+    ) => Response | Promise<Response>);
+
 export interface Route {
     path: string;
     method: Method;
-    handler: Handler;
+    handler: ParameterHandler;
     pattern: URLPattern;
 }
 
