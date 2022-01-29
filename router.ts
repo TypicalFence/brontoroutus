@@ -27,7 +27,7 @@ export class Router implements RouteRegistrar, RouterLike, Routable {
         this.routeMap.set("HEAD", []);
     }
 
-    private addRoute(method: Method, path: string, handler: BrontoHandler) {
+    addRoute(method: Method, path: string, handler: BrontoHandler) {
         this.routeMap.get(method)!.push(
             new FancyRoute({ method, path, handler }),
         );
