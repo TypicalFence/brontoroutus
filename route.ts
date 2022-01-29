@@ -1,9 +1,9 @@
-import { Method, ParameterHandler, Route } from "./types.ts";
+import { Method, BrontoHandler, Route } from "./types.ts";
 
 export class FancyRoute implements Route {
     path: string;
     method: Method;
-    handler: ParameterHandler;
+    handler: BrontoHandler;
     pattern: URLPattern;
 
     constructor({ path, method, handler }: Omit<Route, "pattern">) {

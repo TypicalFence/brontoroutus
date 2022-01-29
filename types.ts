@@ -14,29 +14,33 @@ export type Method =
 
 export type MethodMap<V> = Map<Method, V>;
 
-export type ParameterHandler =
-    | Handler
-    | ((
+export interface ParameterContext {
+    parameters: Record<string, string>;
+}
+
+export type ParameterHandler = (
         request: Request,
         connInfo: ConnInfo,
-        parameter: Record<string, string>,
-    ) => Response | Promise<Response>);
+        ctx?: ParameterContext,
+    ) => Response | Promise<Response>;
+
+export type BrontoHandler = Handler | ParameterHandler
 
 export interface Route {
     path: string;
     method: Method;
-    handler: ParameterHandler;
+    handler: BrontoHandler;
     pattern: URLPattern;
 }
 
 export interface RouteRegistrar {
-    get(path: string, handler: Handler): void;
-    post(path: string, handler: Handler): void;
-    put(path: string, handler: Handler): void;
-    patch(path: string, handler: Handler): void;
-    delete(path: string, handler: Handler): void;
-    options(path: string, handler: Handler): void;
-    head(path: string, handler: Handler): void;
+    get(path: string, handler: BrontoHandler): void;
+    post(path: string, handler: BrontoHandler): void;
+    put(path: string, handler: BrontoHandler): void;
+    patch(path: string, handler: BrontoHandler): void;
+    delete(path: string, handler: BrontoHandler): void;
+    options(path: string, handler: BrontoHandler): void;
+    head(path: string, handler: BrontoHandler): void;
 }
 
 export interface RouterLike {

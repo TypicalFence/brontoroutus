@@ -1,12 +1,11 @@
 import {
     ConnInfo,
-    Handler,
 } from "https://deno.land/std@0.123.0/http/server.ts";
 import { FancyRoute } from "./route.ts";
 import {
     Method,
     MethodMap,
-    ParameterHandler,
+    BrontoHandler,
     Routable,
     Route,
     RouteRegistrar,
@@ -28,37 +27,37 @@ export class Router implements RouteRegistrar, RouterLike, Routable {
         this.routeMap.set("HEAD", []);
     }
 
-    private addRoute(method: Method, path: string, handler: ParameterHandler) {
+    private addRoute(method: Method, path: string, handler: BrontoHandler) {
         this.routeMap.get(method)!.push(
             new FancyRoute({ method, path, handler }),
         );
     }
 
-    get(path: string, handler: ParameterHandler): void {
+    get(path: string, handler: BrontoHandler): void {
         this.addRoute("GET", path, handler);
     }
 
-    post(path: string, handler: ParameterHandler): void {
+    post(path: string, handler: BrontoHandler): void {
         this.addRoute("POST", path, handler);
     }
 
-    put(path: string, handler: ParameterHandler): void {
+    put(path: string, handler: BrontoHandler): void {
         this.addRoute("PUT", path, handler);
     }
 
-    patch(path: string, handler: ParameterHandler): void {
+    patch(path: string, handler: BrontoHandler): void {
         this.addRoute("PATCH", path, handler);
     }
 
-    delete(path: string, handler: ParameterHandler): void {
+    delete(path: string, handler: BrontoHandler): void {
         this.addRoute("DELETE", path, handler);
     }
 
-    options(path: string, handler: ParameterHandler): void {
+    options(path: string, handler: BrontoHandler): void {
         this.addRoute("OPTIONS", path, handler);
     }
 
-    head(path: string, handler: ParameterHandler): void {
+    head(path: string, handler: BrontoHandler): void {
         this.addRoute("HEAD", path, handler);
     }
 
@@ -107,7 +106,9 @@ export class Router implements RouteRegistrar, RouterLike, Routable {
                         pathname: url.pathname,
                     });
                     const record = parameters?.pathname.groups;
-                    return route.handler(req, conn, record || {});
+                    return route.handler(req, conn, {
+                        parameters: record || {},
+                    });
                 } catch (err) {
                     if (errorHandler) {
                         try {
