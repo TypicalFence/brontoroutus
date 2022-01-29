@@ -2,7 +2,7 @@
 
 Tiny Router for deno. Tries to be as close to [std/hhtp](https://deno.land/std@0.123.0/http) as possible and aims to be easily extendable.
 
-Probably not the fastes right now, but that isn't one of the main goals. Easily fixable along the line.
+Probably not the fastest right now, but that isn't one of the main goals. Easily fixable along the line.TM
 
 # Example
 
