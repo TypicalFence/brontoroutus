@@ -1,4 +1,4 @@
-import { Method, BrontoHandler, Route } from "./types.ts";
+import { BrontoHandler, Method, Route } from "./types.ts";
 
 export class FancyRoute implements Route {
     path: string;

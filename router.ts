@@ -1,11 +1,9 @@
-import {
-    ConnInfo,
-} from "https://deno.land/std@0.123.0/http/server.ts";
+import { ConnInfo } from "https://deno.land/std@0.123.0/http/server.ts";
 import { FancyRoute } from "./route.ts";
 import {
+    BrontoHandler,
     Method,
     MethodMap,
-    BrontoHandler,
     Routable,
     Route,
     RouteRegistrar,
@@ -68,7 +66,7 @@ export class Router implements RouteRegistrar, RouterLike, Routable {
     extend(path: string, router: RouterLike): void {
         const routesToAdd = router.getRoutes();
         routesToAdd
-            .map((r) => ({ ...r, path: `${path}/${r.path}` }))
+            .map((r) => ({ ...r, path: `${path}${r.path}` }))
             .forEach((r) => {
                 this.addRoute(r.method, r.path, r.handler);
             });
@@ -106,9 +104,11 @@ export class Router implements RouteRegistrar, RouterLike, Routable {
                         pathname: url.pathname,
                     });
                     const record = parameters?.pathname.groups;
-                    return route.handler(req, conn, {
+                    // await to ensure that the error handler is run
+                    const response = await route.handler(req, conn, {
                         parameters: record || {},
                     });
+                    return response;
                 } catch (err) {
                     if (errorHandler) {
                         try {
@@ -122,6 +122,9 @@ export class Router implements RouteRegistrar, RouterLike, Routable {
                 }
             }
 
+            console.error(
+                "could not run error handler, sending fallback response",
+            );
             return new Response("internal server error", { status: 500 });
         }).bind(this);
     }

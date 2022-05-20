@@ -19,12 +19,12 @@ export interface ParameterContext {
 }
 
 export type ParameterHandler = (
-        request: Request,
-        connInfo: ConnInfo,
-        ctx?: ParameterContext,
-    ) => Response | Promise<Response>;
+    request: Request,
+    connInfo: ConnInfo,
+    ctx?: ParameterContext,
+) => Response | Promise<Response>;
 
-export type BrontoHandler = Handler | ParameterHandler
+export type BrontoHandler = Handler | ParameterHandler;
 
 export interface Route {
     path: string;
